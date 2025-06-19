@@ -1,0 +1,71 @@
+name: Deploy sprint5-with-bugs 🐞
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+  
+
+concurrency: production_environment
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      NODE_VERSION: '22.2.0'
+      SECRET_GOOGLE_ID: ${{ secrets.SECRET_GOOGLE_ID }}
+      SECRET_GOOGLE_SECRET: ${{ secrets.SECRET_GOOGLE_SECRET }}
+      SECRET_GITHUB_ID: ${{ secrets.SECRET_GITHUB_ID }}
+      SECRET_GITHUB_SECRET: ${{ secrets.SECRET_GITHUB_SECRET }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Dev Dependencies (Laravel)
+        run: |
+          cd sprint5-with-bugs/API
+          composer update --no-progress --prefer-dist
+
+      - name: Run Laravel Tests (Pest)
+        run: |
+          cd sprint5-with-bugs/API
+          ./vendor/bin/pest
+
+      - name: Install Production Dependencies
+        run: |
+          cd sprint5-with-bugs/API
+          composer update --no-dev --prefer-dist --optimize-autoloader
+          composer dump-autoload -o
+
+      - name: Generate .env File from Template
+        uses: danielr1996/envsubst-action@1.0.0
+        env:
+          SECRET_DB: ${{ secrets.SECRET_DB }}
+          SECRET_DB_USER: ${{ secrets.SECRET_DB_USER }}
+          SECRET_DB_PASS: ${{ secrets.SECRET_DB_PASS }}
+          SECRET_GOOGLE_ID: ${{ secrets.SECRET_GOOGLE_ID }}
+          SECRET_GOOGLE_SECRET: ${{ secrets.SECRET_GOOGLE_SECRET }}
+          SECRET_GITHUB_ID: ${{ secrets.SECRET_GITHUB_ID }}
+          SECRET_GITHUB_SECRET: ${{ secrets.SECRET_GITHUB_SECRET }}
+          APP_KEY: ${{ secrets.APP_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        with:
+          input: sprint5-with-bugs/API/.env_template
+          output: sprint5-with-bugs/API/.env
+
+      - name: Deploy via Deployer
+        uses: deployphp/action@v1.0.23
+        with:
+          private-key: ${{ secrets.PRIVATE_KEY }}
+          dep: deploy:sprint5-with-bugs production
+          deployer-version: '7.4.0'
