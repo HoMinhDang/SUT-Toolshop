@@ -39,7 +39,7 @@ jobs:
       - name: Run Laravel Tests (Pest)
         run: |
           cd sprint5-with-bugs/API
-          ./vendor/bin/pest
+          ./vendor/bin/phpunit
 
       - name: Install Production Dependencies
         run: |
