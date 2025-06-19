@@ -1,9 +1,9 @@
 name: Laravel Feature Tests 🧪
 
 on:
-#   push:
-#     branches: [ main ]
-    workflow_dispatch:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -20,15 +20,12 @@ jobs:
       - name: Sleep ⏱️
         run: sleep 30s
 
-      - name: Install composer dependencies 📦
-        run: docker compose exec -T laravel-api composer install
-
-      - name: Check PHPUnit binary 🔍
-        run: docker compose exec -T laravel-api ls -la /var/www/vendor/bin
+      - name: Check if PHPUnit is available 🧐
+        run: docker compose exec -T laravel-api phpunit --version
 
       - name: Migrate & seed database 🌱
         run: docker compose exec -T laravel-api php artisan migrate:refresh --seed
 
-      - name: Run Laravel Feature tests 🧪
-        run: |
-          docker compose exec -T laravel-api ./vendor/bin/phpunit --testdox --colors=always /var/www/tests/Feature
+      - name: Run Laravel Feature tests (with colors) 🧪
+        run: docker compose exec -T laravel-api phpunit --testdox --colors=always /var/www/tests/Feature
+
