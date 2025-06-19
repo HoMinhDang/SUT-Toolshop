@@ -1,0 +1,70 @@
+# .github/workflows/ci.yml
+
+name: Laravel & Angular CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push events for the main and develop branches
+  push:
+    branches: [ "main", "develop" ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  # This workflow contains a single job called "build-and-test"
+  build-and-test:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repository code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Setup .env file
+      # GitHub Actions needs its own .env file. We copy it from the example.
+      - name: Setup Environment File
+        run: cp .env.example .env
+
+      # 3. Build and start the Docker containers
+      # This command builds the images if they don't exist and starts all services in the background.
+      - name: Build and Run Docker Containers
+        run: docker-compose up -d --build
+
+      # 4. Install Composer Dependencies
+      # We execute 'composer install' inside the running 'laravel-api' container.
+      - name: Install Backend Dependencies
+        run: docker-compose exec -T laravel-api composer install --no-interaction --no-progress --prefer-dist
+
+      # 5. Generate Application Key
+      # A Laravel application key is required.
+      - name: Generate Laravel Key
+        run: docker-compose exec -T laravel-api php artisan key:generate
+
+      # 6. Run Database Migrations and Seeders
+      # The '--fresh' command drops all tables and re-runs migrations.
+      # The '--seed' command populates the database with test data.
+      - name: Run Migrations and Seed Database
+        run: docker-compose exec -T laravel-api php artisan migrate:fresh --seed
+
+      # 7. Generate Swagger Documentation (Optional)
+      # If your tests depend on the documentation being present.
+      - name: Generate Swagger Docs
+        run: docker-compose exec -T laravel-api php artisan l5-swagger:generate
+
+      # 8. Run Backend Pest Tests (for Sprint 5+)
+      # This executes the test suite. The -T flag for docker-compose exec is important
+      # as it disables pseudo-tty allocation, which is necessary for CI environments.
+      - name: Run Pest Tests
+        run: docker-compose exec -T laravel-api ./vendor/bin/pest
+
+      # NOTE: If you need to run PHPUnit tests for older sprints,
+      # comment out the "Run Pest Tests" step above and uncomment the one below.
+      # - name: Run PHPUnit Tests (Sprint 1-4)
+      #   run: docker-compose exec -T laravel-api ./vendor/bin/phpunit
+
+      # 9. Log container status
+      # This step helps in debugging if something went wrong.
+      - name: Display Docker Status
+        if: always() # This ensures the step runs even if previous steps fail
+        run: docker-compose ps
