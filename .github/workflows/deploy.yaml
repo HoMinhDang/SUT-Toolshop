@@ -1,0 +1,63 @@
+name: deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency: production_environment
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      NODE_VERSION: '16'
+      SECRET_GOOGLE_ID: ''
+      SECRET_GOOGLE_SECRET: ''
+      SECRET_GITHUB_ID: ''
+      SECRET_GITHUB_SECRET: ''
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install (dev) Dependencies
+        run: |
+          cd sprint5-with-bugs/API
+          composer update --no-progress --prefer-dist
+
+      - name: Run Laravel Tests
+        run: |
+          cd sprint5-with-bugs/API
+          ./vendor/bin/phpunit
+
+      - name: Install Dependencies
+        run: |
+          cd sprint5-with-bugs/API
+          composer update --no-dev --prefer-dist --optimize-autoloader
+          composer dump-autoload -o
+
+      - name: Make envfile
+        uses: danielr1996/envsubst-action@1.0.0
+        env:
+          SECRET_DB: ${{ secrets.SECRET_DB }}
+          SECRET_DB_USER: ${{ secrets.SECRET_DB_USER }}
+          SECRET_DB_PASS: ${{ secrets.SECRET_DB_PASS }}
+        with:
+          input: sprint5-with-bugs/API/.env_template
+          output: sprint5-with-bugs/API/.env
+
+      - name: Deploy
+        uses: deployphp/action@v1.0.23
+        with:
+          private-key: ${{ secrets.PRIVATE_KEY }}
+          dep: deploy:sprint5-with-bugs production
+          deployer-version: '7.4.0'
