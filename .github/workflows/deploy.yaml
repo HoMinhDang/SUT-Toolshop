@@ -30,6 +30,9 @@ jobs:
           cd sprint5-with-bugs/API
           composer update --no-progress --prefer-dist
 
+      - name: Check PHP extensions
+        run: php -m
+
       - name: Run Laravel Tests
         run: |
           cd sprint5-with-bugs/API
