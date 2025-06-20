@@ -1,0 +1,33 @@
+name: ci-frontend
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-frontend:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: sprint5-with-bugs/UI
+
+    steps:
+      - name: 🧾 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: 📥 Install dependencies
+        run: npm install
+
+      - name: 🧪 Run frontend unit tests
+        run: npm run test -- --watch=false --browsers=ChromeHeadless
+
+      # (Optional) Build để kiểm tra lỗi build
+      - name: 🛠️ Build frontend
+        run: npm run build --if-present
