@@ -1,17 +1,13 @@
-name: ci-frontend
+name: ci-playwright
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  test-frontend:
+  test-e2e:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: sprint5-with-bugs/UI
 
     steps:
       - name: 🧾 Checkout
@@ -23,11 +19,10 @@ jobs:
           node-version: '18'
 
       - name: 📥 Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: 🧪 Run frontend unit tests
-        run: npm run test -- --watch=false --browsers=ChromeHeadless
+      - name: 🌐 Install Playwright browsers
+        run: npx playwright install --with-deps
 
-      # (Optional) Build để kiểm tra lỗi build
-      - name: 🛠️ Build frontend
-        run: npm run build --if-present
+      - name: 🧪 Run Playwright tests
+        run: npx playwright test
