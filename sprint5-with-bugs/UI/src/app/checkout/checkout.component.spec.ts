@@ -7,6 +7,7 @@ import { CustomerAccountService } from '../shared/customer-account.service';
 import { TokenStorageService } from '../_services/token-storage.service';
 import { InvoiceService } from '../_services/invoice.service';
 import { PaymentService } from '../_services/payment.service';
+import { WizardModule } from '@angular-wizard/angular-wizard'; // 👈 THÊM DÒNG NÀY
 
 describe('CheckoutComponent', () => {
   let component: CheckoutComponent;
@@ -51,7 +52,10 @@ describe('CheckoutComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CheckoutComponent],
-      imports: [ReactiveFormsModule],
+      imports: [
+        ReactiveFormsModule,
+        WizardModule // 👈 THÊM VÀO ĐÂY
+      ],
       providers: [
         { provide: CartService, useValue: mockCartService },
         { provide: CustomerAccountService, useValue: mockCustomerAccountService },
@@ -80,7 +84,7 @@ describe('CheckoutComponent', () => {
   it('should delete item and recalculate total', () => {
     component.delete(1);
     expect(mockCartService.deleteItem).toHaveBeenCalledWith(1);
-    expect(component.items.length).toBe(2); // vì mock getItems vẫn trả về 2 item
-    expect(component.total).toBe(250); // vẫn 250 vì mock cố định
+    expect(component.items.length).toBe(2);
+    expect(component.total).toBe(250);
   });
 });
