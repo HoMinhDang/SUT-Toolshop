@@ -34,3 +34,6 @@ jobs:
 
       - name: 🧪 Run Angular unit tests (Karma + ChromeHeadless)
         run: xvfb-run --auto-servernum -- npm run test -- --watch=false --browsers=ChromeHeadless
+
+      - name: 🛠️ Build Angular app
+        run: npm run build -- --configuration production
