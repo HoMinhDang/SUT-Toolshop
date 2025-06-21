@@ -1,0 +1,42 @@
+name: CI-FE
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test-frontend:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: sprint5-with-bugs/UI # ❗ chỉnh path nếu dự án FE nằm ở nơi khác
+
+    steps:
+      - name: 🧾 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js 
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: 📥 Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: 🧱 Install Chrome dependencies (for ChromeHeadless)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libnss3 libxss1 libasound2t64 \
+            fonts-liberation libappindicator3-1 libatk-bridge2.0-0 \
+            libgtk-3-0 libxshmfence1 xvfb
+
+      - name: 🧹 Run Lint (ESLint + Angular rules)
+        run: npm run lint
+
+      - name: 🧪 Run Angular unit tests (Karma + ChromeHeadless)
+        run: xvfb-run --auto-servernum -- npm run test -- --watch=false --browsers=ChromeHeadless
+
+      - name: 🛠️ Build Angular app
+        run: npm run build -- --configuration production
