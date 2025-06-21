@@ -52,8 +52,7 @@ describe('CheckoutComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [CheckoutComponent],
       imports: [
-        ReactiveFormsModule,
-        WizardModule // 👈 THÊM VÀO ĐÂY
+        ReactiveFormsModule
       ],
       providers: [
         { provide: CartService, useValue: mockCartService },
