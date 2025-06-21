@@ -11,7 +11,6 @@
   },
   "private": true,
   "dependencies": {
-    "@angular-slider/ngx-slider": "2.0.4",
     "@angular/animations": "15.2.0",
     "@angular/common": "15.2.0",
     "@angular/compiler": "15.2.0",
@@ -23,12 +22,13 @@
     "@auth0/angular-jwt": "5.1.2",
     "@ng-bootstrap/ng-bootstrap": "12.1.2",
     "@popperjs/core": "2.11.5",
-    "angular-archwizard": "7.0.0",
     "angular2-chartjs": "^0.5.1",
     "bootstrap": "5.2.3",
     "jquery": "3.6.3",
     "ng-http-loader": "13.0.0",
     "ngx-pagination": "6.0.2",
+    "ngx-slider": "2.0.4",
+    "ng-wizard": "18.0.1",          // ✅ Thêm wizard mới
     "rxjs": "7.8.0",
     "tslib": "2.5.0",
     "zone.js": "0.12.0"
