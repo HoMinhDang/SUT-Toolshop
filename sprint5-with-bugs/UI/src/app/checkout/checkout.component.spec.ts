@@ -1,67 +1,63 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CheckoutComponent } from './checkout.component';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
-
-// Mock các service sử dụng trong component
-class MockPaymentService {
-  validate(endpoint: string, payload: any) {
-    return of({ message: 'Payment valid' });
-  }
-}
-class MockInvoiceService {
-  createInvoice(payload: any) {
-    return of({ invoice_number: 12345 });
-  }
-}
-class MockCartService {
-  getItems() {
-    return [{ id: 1, price: 100, quantity: 1, total: 100 }];
-  }
-  deleteItem(id: number) {}
-  replaceQuantity(id: number, qty: number) {}
-  emptyCart() {}
-}
-class MockCustomerAccountService {
-  isLoggedIn() {
-    return true;
-  }
-  getDetails() {
-    return of({
-      address: '123 Main',
-      city: 'City',
-      state: 'ST',
-      country: 'Country',
-      postcode: '0000'
-    });
-  }
-  login(payload: any) {
-    return of({ access_token: 'mock-token' });
-  }
-  getRole() {
-    return ['user'];
-  }
-  authSub = { next: (val: string) => {} };
-}
-class MockTokenStorageService {
-  saveToken(token: string) {}
-}
+import { CartService } from '../_services/cart.service';
+import { CustomerAccountService } from '../shared/customer-account.service';
+import { TokenStorageService } from '../_services/token-storage.service';
+import { InvoiceService } from '../_services/invoice.service';
+import { PaymentService } from '../_services/payment.service';
 
 describe('CheckoutComponent', () => {
   let component: CheckoutComponent;
   let fixture: ComponentFixture<CheckoutComponent>;
 
+  let mockCartService = {
+    getItems: jasmine.createSpy().and.returnValue([
+      { id: 1, price: 100, quantity: 2, total: 200 },
+      { id: 2, price: 50, quantity: 1, total: 50 }
+    ]),
+    deleteItem: jasmine.createSpy(),
+    replaceQuantity: jasmine.createSpy(),
+    emptyCart: jasmine.createSpy()
+  };
+
+  let mockCustomerAccountService = {
+    isLoggedIn: jasmine.createSpy().and.returnValue(true),
+    getDetails: jasmine.createSpy().and.returnValue(of({
+      address: '123 St',
+      city: 'Hanoi',
+      state: 'HN',
+      country: 'VN',
+      postcode: '10000'
+    })),
+    login: jasmine.createSpy().and.returnValue(of({ access_token: 'mock-token' })),
+    getRole: jasmine.createSpy().and.returnValue(['ROLE_USER']),
+    authSub: { next: jasmine.createSpy() }
+  };
+
+  let mockTokenStorage = {
+    saveToken: jasmine.createSpy()
+  };
+
+  let mockInvoiceService = {
+    createInvoice: jasmine.createSpy().and.returnValue(of({ invoice_number: 123 }))
+  };
+
+  let mockPaymentService = {
+    validate: jasmine.createSpy().and.returnValue(of({ message: 'Payment valid' }))
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CheckoutComponent],
-      imports: [ReactiveFormsModule, FormsModule, HttpClientTestingModule],
+      imports: [ReactiveFormsModule],
       providers: [
-        { provide: PaymentService, useClass: MockPaymentService },
-        { provide: InvoiceService, useClass: MockInvoiceService },
-        { provide: CartService, useClass: MockCartService },
-        { provide: CustomerAccountService, useClass: MockCustomerAccountService },
-        { provide: TokenStorageService, useClass: MockTokenStorageService }
+        { provide: CartService, useValue: mockCartService },
+        { provide: CustomerAccountService, useValue: mockCustomerAccountService },
+        { provide: TokenStorageService, useValue: mockTokenStorage },
+        { provide: InvoiceService, useValue: mockInvoiceService },
+        { provide: PaymentService, useValue: mockPaymentService }
       ]
     }).compileComponents();
   });
@@ -72,11 +68,18 @@ describe('CheckoutComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create the component', () => {
+  it('should create component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should get total > 0 when items exist', () => {
-    expect(component.getTotal()).toBeGreaterThan(0);
+  it('should calculate total correctly', () => {
+    const total = component.getTotal();
+    expect(total).toBe(250);
+  });
+
+  it('should delete item and update cart', () => {
+    component.delete(1);
+    expect(mockCartService.deleteItem).toHaveBeenCalledWith(1);
+    expect(component.total).toBe(250); // Vì mockCartService vẫn trả về cùng dữ liệu
   });
 });
