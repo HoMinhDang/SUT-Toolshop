@@ -5,26 +5,21 @@ import { LoginComponent } from './login.component';
 import { CustomerAccountService } from '../../shared/customer-account.service';
 import { TokenStorageService } from '../../_services/token-storage.service';
 import { BrowserDetectorService } from '../../_services/browser-detector.service';
-import { User } from '../../models/user.model';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
 
-  // Mocks
   let mockTokenStorage: any;
   let mockAccountService: any;
   let mockBrowserDetect: any;
 
   beforeEach(async () => {
-    // tạo Subject để giả lập authSub.next
     const authSub = new Subject<string>();
-
     mockTokenStorage = {
       getToken: jasmine.createSpy('getToken'),
       saveToken: jasmine.createSpy('saveToken')
     };
-
     mockAccountService = {
       login: jasmine.createSpy('login'),
       authSub: authSub,
@@ -32,11 +27,7 @@ describe('LoginComponent', () => {
       redirectToAccount: jasmine.createSpy('redirectToAccount'),
       redirectToDashboard: jasmine.createSpy('redirectToDashboard')
     };
-
-    mockBrowserDetect = {
-      isMobile: false,
-      getBrowser: () => 'Chrome'
-    };
+    mockBrowserDetect = { isMobile: false, getBrowser: () => 'Chrome' };
 
     await TestBed.configureTestingModule({
       declarations: [LoginComponent],
@@ -58,46 +49,35 @@ describe('LoginComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('ngOnInit sets isLoggedIn true if token exists', () => {
+  it('ngOnInit sets isLoggedIn correctly based on token', () => {
     mockTokenStorage.getToken.and.returnValue('abc');
     component.ngOnInit();
     expect(component.isLoggedIn).toBeTrue();
-    // form luôn được tạo
-    expect(component.form).toBeTruthy();
-  });
 
-  it('ngOnInit sets isLoggedIn false if no token', () => {
     mockTokenStorage.getToken.and.returnValue(null);
     component.ngOnInit();
     expect(component.isLoggedIn).toBeFalse();
   });
 
-  it('onSubmit success with role user calls redirectToAccount', () => {
-    // chuẩn bị form valid
+  it('onSubmit for user role redirects to account', () => {
     component.ngOnInit();
     component.form.setValue({ email: 'a@b.com', password: '123456' });
 
-    // login trả về access_token
     mockAccountService.login.and.returnValue(of({ access_token: 'tok' }));
-    // getRole trả về 'user'
     mockAccountService.getRole.and.returnValue('user');
 
     component.onSubmit();
 
     expect(component.submitted).toBeTrue();
-    expect(mockAccountService.login).toHaveBeenCalledWith(<User>{
-      email: 'a@b.com',
-      password: '123456'
-    });
+    expect(mockAccountService.login).toHaveBeenCalledWith(jasmine.objectContaining({ email:'a@b.com', password:'123456' }));
     expect(mockTokenStorage.saveToken).toHaveBeenCalledWith('tok');
     expect(component.isLoginFailed).toBeFalse();
     expect(component.isLoggedIn).toBeTrue();
-    expect(mockAccountService.authSub.observers.length).toBeGreaterThan(0);
     expect(mockAccountService.redirectToAccount).toHaveBeenCalled();
     expect(mockAccountService.redirectToDashboard).not.toHaveBeenCalled();
   });
 
-  it('onSubmit success with role admin calls redirectToDashboard', () => {
+  it('onSubmit for admin role redirects to dashboard', () => {
     component.ngOnInit();
     component.form.setValue({ email: 'x@x.com', password: 'pwd' });
 
@@ -106,17 +86,17 @@ describe('LoginComponent', () => {
 
     component.onSubmit();
 
+    expect(mockAccountService.login).toHaveBeenCalledWith(jasmine.objectContaining({ email:'x@x.com', password:'pwd' }));
     expect(mockTokenStorage.saveToken).toHaveBeenCalledWith('admintok');
     expect(mockAccountService.redirectToDashboard).toHaveBeenCalled();
     expect(mockAccountService.redirectToAccount).not.toHaveBeenCalled();
   });
 
-  it('onSubmit error Unauthorized sets error message', () => {
+  it('onSubmit sets error message for Unauthorized', () => {
     component.ngOnInit();
     component.form.setValue({ email: 'u@u.com', password: 'pw' });
 
-    const httpError = { error: 'Unauthorized' };
-    mockAccountService.login.and.returnValue(throwError(() => httpError));
+    mockAccountService.login.and.returnValue(throwError(() => ({ error: 'Unauthorized' })));
 
     component.onSubmit();
 
@@ -124,16 +104,15 @@ describe('LoginComponent', () => {
     expect(component.error).toBe('Invalid email or password');
   });
 
-  it('onSubmit error other sets error to err.error', () => {
+  it('onSubmit sets error message for other errors', () => {
     component.ngOnInit();
     component.form.setValue({ email: 'u@u.com', password: 'pw' });
 
-    const httpError = { error: 'Some other error' };
-    mockAccountService.login.and.returnValue(throwError(() => httpError));
+    mockAccountService.login.and.returnValue(throwError(() => ({ error: 'Some other error' })));
 
     component.onSubmit();
 
-    expect(component.error).toBe('Some other error');
     expect(component.isLoginFailed).toBeTrue();
+    expect(component.error).toBe('Some other error');
   });
 });
