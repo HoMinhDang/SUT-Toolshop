@@ -1,4 +1,4 @@
-name: ci-playwright
+name: ci-angular-unit-test
 
 on:
   push:
@@ -6,11 +6,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-e2e:
+  test-angular:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: sprint5-with-bugs/UI # Thay đổi path nếu cần
+
     steps:
-      - name: 🧾 Checkout
+      - name: 🧾 Checkout code
         uses: actions/checkout@v4
 
       - name: 📦 Setup Node.js
@@ -18,11 +22,14 @@ jobs:
         with:
           node-version: '18'
 
-      - name: 📥 Install dependencies
+      - name: 🧱 Install system dependencies (for ChromeHeadless)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libnss3 libxss1 libasound2 fonts-liberation \
+            libappindicator3-1 libatk-bridge2.0-0 libgtk-3-0 libxshmfence1 xvfb
+
+      - name: 📥 Install Angular dependencies
         run: npm ci
 
-      - name: 🌐 Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: 🧪 Run Playwright tests
-        run: npx playwright test
+      - name: 🧪 Run Angular unit tests (Karma + ChromeHeadless)
+        run: xvfb-run --auto-servernum -- npm run test -- --watch=false --browsers=ChromeHeadless
