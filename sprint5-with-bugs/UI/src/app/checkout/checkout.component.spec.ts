@@ -7,7 +7,6 @@ import { CustomerAccountService } from '../shared/customer-account.service';
 import { TokenStorageService } from '../_services/token-storage.service';
 import { InvoiceService } from '../_services/invoice.service';
 import { PaymentService } from '../_services/payment.service';
-import { WizardModule } from '@angular-wizard/angular-wizard'; // 👈 THÊM DÒNG NÀY
 
 describe('CheckoutComponent', () => {
   let component: CheckoutComponent;
