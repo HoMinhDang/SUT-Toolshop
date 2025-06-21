@@ -13,20 +13,24 @@ describe('LoginComponent', () => {
   let mockTokenStorage: any;
   let mockAccountService: any;
   let mockBrowserDetect: any;
+  let authSub: Subject<string>;
 
   beforeEach(async () => {
-    const authSub = new Subject<string>();
+    authSub = new Subject<string>();
+
     mockTokenStorage = {
       getToken: jasmine.createSpy('getToken'),
       saveToken: jasmine.createSpy('saveToken')
     };
+
     mockAccountService = {
       login: jasmine.createSpy('login'),
-      authSub: authSub,
+      authSub: { next: jasmine.createSpy('next') },
       getRole: jasmine.createSpy('getRole'),
       redirectToAccount: jasmine.createSpy('redirectToAccount'),
       redirectToDashboard: jasmine.createSpy('redirectToDashboard')
     };
+
     mockBrowserDetect = { isMobile: false, getBrowser: () => 'Chrome' };
 
     await TestBed.configureTestingModule({
@@ -46,6 +50,7 @@ describe('LoginComponent', () => {
   });
 
   it('should create', () => {
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
@@ -61,6 +66,9 @@ describe('LoginComponent', () => {
 
   it('onSubmit for user role redirects to account', () => {
     component.ngOnInit();
+    fixture.detectChanges();
+    expect(component.form).toBeTruthy();
+
     component.form.setValue({ email: 'a@b.com', password: '123456' });
 
     mockAccountService.login.and.returnValue(of({ access_token: 'tok' }));
@@ -69,8 +77,12 @@ describe('LoginComponent', () => {
     component.onSubmit();
 
     expect(component.submitted).toBeTrue();
-    expect(mockAccountService.login).toHaveBeenCalledWith(jasmine.objectContaining({ email:'a@b.com', password:'123456' }));
+    expect(mockAccountService.login).toHaveBeenCalledWith(jasmine.objectContaining({
+      email: 'a@b.com',
+      password: '123456'
+    }));
     expect(mockTokenStorage.saveToken).toHaveBeenCalledWith('tok');
+    expect(mockAccountService.authSub.next).toHaveBeenCalledWith('changed');
     expect(component.isLoginFailed).toBeFalse();
     expect(component.isLoggedIn).toBeTrue();
     expect(mockAccountService.redirectToAccount).toHaveBeenCalled();
@@ -79,40 +91,61 @@ describe('LoginComponent', () => {
 
   it('onSubmit for admin role redirects to dashboard', () => {
     component.ngOnInit();
-    component.form.setValue({ email: 'x@x.com', password: 'pwd' });
+    fixture.detectChanges();
+    component.form.setValue({ email: 'admin@site.com', password: 'adminpwd' });
 
     mockAccountService.login.and.returnValue(of({ access_token: 'admintok' }));
     mockAccountService.getRole.and.returnValue('admin');
 
     component.onSubmit();
 
-    expect(mockAccountService.login).toHaveBeenCalledWith(jasmine.objectContaining({ email:'x@x.com', password:'pwd' }));
+    expect(component.submitted).toBeTrue();
+    expect(mockAccountService.login).toHaveBeenCalledWith(jasmine.objectContaining({
+      email: 'admin@site.com',
+      password: 'adminpwd'
+    }));
     expect(mockTokenStorage.saveToken).toHaveBeenCalledWith('admintok');
+    expect(mockAccountService.authSub.next).toHaveBeenCalledWith('changed');
     expect(mockAccountService.redirectToDashboard).toHaveBeenCalled();
     expect(mockAccountService.redirectToAccount).not.toHaveBeenCalled();
   });
 
   it('onSubmit sets error message for Unauthorized', () => {
     component.ngOnInit();
+    fixture.detectChanges();
     component.form.setValue({ email: 'u@u.com', password: 'pw' });
 
     mockAccountService.login.and.returnValue(throwError(() => ({ error: 'Unauthorized' })));
 
     component.onSubmit();
 
+    expect(component.submitted).toBeTrue();
     expect(component.isLoginFailed).toBeTrue();
     expect(component.error).toBe('Invalid email or password');
   });
 
   it('onSubmit sets error message for other errors', () => {
     component.ngOnInit();
+    fixture.detectChanges();
     component.form.setValue({ email: 'u@u.com', password: 'pw' });
 
     mockAccountService.login.and.returnValue(throwError(() => ({ error: 'Some other error' })));
 
     component.onSubmit();
 
+    expect(component.submitted).toBeTrue();
     expect(component.isLoginFailed).toBeTrue();
     expect(component.error).toBe('Some other error');
+  });
+
+  it('should not submit if form is invalid', () => {
+    component.ngOnInit();
+    fixture.detectChanges();
+    component.form.setValue({ email: '', password: '' });
+
+    component.onSubmit();
+
+    expect(component.submitted).toBeTrue();
+    expect(mockAccountService.login).not.toHaveBeenCalled();
   });
 });
