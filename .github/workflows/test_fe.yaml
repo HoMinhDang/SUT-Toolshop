@@ -23,7 +23,7 @@ jobs:
           node-version: '18'
 
       - name: 📥 Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: 🧱 Install Chrome dependencies (for ChromeHeadless)
         run: |
