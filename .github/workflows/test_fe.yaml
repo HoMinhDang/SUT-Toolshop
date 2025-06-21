@@ -6,30 +6,31 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-angular:
+  test-frontend:
     runs-on: ubuntu-latest
 
     defaults:
       run:
-        working-directory: sprint5-with-bugs/UI # Thay đổi path nếu cần
+        working-directory: sprint5-with-bugs/UI # ❗ chỉnh path nếu dự án FE nằm ở nơi khác
 
     steps:
       - name: 🧾 Checkout code
         uses: actions/checkout@v4
 
-      - name: 📦 Setup Node.js
+      - name: 📦 Setup Node.js (v18 để tương thích với Angular 15)
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: 🧱 Install system dependencies (for ChromeHeadless)
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🧱 Install Chrome dependencies (for ChromeHeadless)
         run: |
           sudo apt-get update
-          sudo apt-get install -y libnss3 libxss1 libasound2 fonts-liberation \
-            libappindicator3-1 libatk-bridge2.0-0 libgtk-3-0 libxshmfence1 xvfb
-
-      - name: 📥 Install Angular dependencies
-        run: npm ci
+          sudo apt-get install -y libnss3 libxss1 libasound2t64 \
+            fonts-liberation libappindicator3-1 libatk-bridge2.0-0 \
+            libgtk-3-0 libxshmfence1 xvfb
 
       - name: 🧪 Run Angular unit tests (Karma + ChromeHeadless)
         run: xvfb-run --auto-servernum -- npm run test -- --watch=false --browsers=ChromeHeadless
