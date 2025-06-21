@@ -17,7 +17,7 @@ jobs:
       - name: 🧾 Checkout code
         uses: actions/checkout@v4
 
-      - name: 📦 Setup Node.js (v18 để tương thích với Angular 15)
+      - name: 📦 Setup Node.js 
         uses: actions/setup-node@v4
         with:
           node-version: '18'
