@@ -123,7 +123,7 @@ export class CheckoutComponent implements OnInit {
     const items = this.cartService.getItems();
     if (items != null && items.length) {
       return Math.floor(items
-        .reduce((sum: number, current: { total: any; }) => sum + Number(current.total), 0) * 100) / 100 + 1;
+        .reduce((sum: number, current: { total: any; }) => sum + Number(current.total), 0) * 100) / 100 ;
     } else {
       return 0;
     }
