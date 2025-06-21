@@ -28,7 +28,7 @@
     "ng-http-loader": "13.0.0",
     "ngx-pagination": "6.0.2",
     "ngx-slider": "2.0.4",
-    "ng-wizard": "18.0.1",          // ✅ Thêm wizard mới
+    "ng-wizard": "18.0.1",         
     "rxjs": "7.8.0",
     "tslib": "2.5.0",
     "zone.js": "0.12.0"
