@@ -1,4 +1,4 @@
-name: ci-angular-unit-test
+name: CI-FE
 
 on:
   push:
