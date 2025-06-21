@@ -11,7 +11,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: sprint5-with-bugs/UI # ❗ chỉnh path nếu dự án FE nằm ở nơi khác
+        working-directory: sprint5-with-bugs/UI 
 
     steps:
       - name: 🧾 Checkout code
