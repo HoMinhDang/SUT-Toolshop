@@ -72,14 +72,15 @@ describe('CheckoutComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should calculate total correctly', () => {
-    const total = component.getTotal();
-    expect(total).toBe(250);
+  it('should initialize with total = 250 from cart items', () => {
+    expect(mockCartService.getItems).toHaveBeenCalled();
+    expect(component.total).toBe(250);
   });
 
-  it('should delete item and update cart', () => {
+  it('should delete item and recalculate total', () => {
     component.delete(1);
     expect(mockCartService.deleteItem).toHaveBeenCalledWith(1);
-    expect(component.total).toBe(250); // Vì mockCartService vẫn trả về cùng dữ liệu
+    expect(component.items.length).toBe(2); // vì mock getItems vẫn trả về 2 item
+    expect(component.total).toBe(250); // vẫn 250 vì mock cố định
   });
 });
