@@ -1,5 +1,4 @@
-name: ci-only
-
+name: CI-BE
 on:
   push:
     branches: [ main ]
