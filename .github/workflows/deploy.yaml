@@ -28,13 +28,13 @@ jobs:
 
       - name: 📦 Install PHP dependencies
         run: |
-          cd sprint5-with-bugs/API
+          cd sprint5/API
           composer install --no-progress --prefer-dist --no-interaction
           composer require --dev brianium/paratest:^7.0
 
       - name: ⚙️ Prepare Laravel for testing
         run: |
-          cd sprint5-with-bugs/API
+          cd sprint5/API
           cp .env.example .env
           php artisan key:generate
           php artisan config:clear
@@ -42,5 +42,5 @@ jobs:
 
       - name: 🧪 Run Laravel Tests using artisan
         run: |
-          cd sprint5-with-bugs/API
+          cd sprint5/API
           php artisan test --parallel --debug
