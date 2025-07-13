@@ -27,14 +27,6 @@ jobs:
           cd sprint5-with-bugs/API
           composer install --no-progress --prefer-dist --no-interaction
 
-      # - name: ⚙️ Prepare Laravel
-      #   run: |
-      #     cd sprint5-with-bugs/API
-      #     cp .env.example .env
-      #     php artisan key:generate
-      #     echo "JWT_SECRET=$(openssl rand -hex 32)" >> .env
-      #     php artisan config:clear
-
       - name: 🧪 Run Laravel Tests
         run: |
           cd sprint5-with-bugs/API
