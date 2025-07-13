@@ -40,7 +40,7 @@ jobs:
           php artisan config:clear
           php artisan migrate --seed
 
-      - name: 🧪 Run PHPUnit tests (debug mode)
+      - name: 🧪 Run Laravel Tests using artisan
         run: |
           cd sprint5-with-bugs/API
-          ./vendor/bin/phpunit --debug
+          php artisan test --parallel --debug
