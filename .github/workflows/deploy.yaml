@@ -43,4 +43,4 @@ jobs:
       - name: 🧪 Run Laravel Tests using artisan
         run: |
           cd sprint5/API
-          php artisan test --parallel --debug
+          php artisan test --parallel 
