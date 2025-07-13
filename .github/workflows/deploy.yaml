@@ -54,7 +54,7 @@ jobs:
           cd sprint5-with-bugs/API
           cp .env.example .env
           php artisan key:generate
-          echo "JWT_SECRET=testingsecret" >> .env
+          echo "JWT_SECRET=XVVuj9s7byIX8XPNWt0aYOsFjmc4JZQmE2wR7h9IJXoEOWXwk6o6wM8AKUL7jUTy" >> .env
           php artisan config:clear
           php artisan migrate --seed
 
