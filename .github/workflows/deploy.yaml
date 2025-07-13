@@ -5,16 +5,34 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-concurrency: production_environment
-
 jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_DATABASE: testdb
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_USER: test
+          MYSQL_PASSWORD: test
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     env:
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: testdb
+      DB_USERNAME: test
+      DB_PASSWORD: test
       APP_ENV: testing
-      DB_CONNECTION: sqlite
-      DB_DATABASE: ':memory:'
 
     steps:
       - name: 🧾 Checkout source code
@@ -30,9 +48,8 @@ jobs:
         run: |
           cd sprint5-with-bugs/API
           composer install --no-progress --prefer-dist --no-interaction
-          composer require --dev brianium/paratest:^7.0
 
-      - name: ⚙️ Prepare Laravel for testing
+      - name: ⚙️ Prepare Laravel
         run: |
           cd sprint5-with-bugs/API
           cp .env.example .env
@@ -40,7 +57,7 @@ jobs:
           php artisan config:clear
           php artisan migrate --seed
 
-      - name: 🧪 Run Laravel Tests using artisan
+      - name: 🧪 Run Laravel Tests
         run: |
           cd sprint5-with-bugs/API
-          php artisan test --parallel --debug
+          php artisan test --debug
