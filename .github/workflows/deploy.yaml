@@ -54,8 +54,10 @@ jobs:
           cd sprint5-with-bugs/API
           cp .env.example .env
           php artisan key:generate
+          echo "JWT_SECRET=testingsecret" >> .env
           php artisan config:clear
           php artisan migrate --seed
+
 
       - name: 🧪 Run Laravel Tests
         run: |
