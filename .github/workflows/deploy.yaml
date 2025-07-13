@@ -27,24 +27,20 @@ jobs:
           php-version: '8.3'
           coverage: none
 
-      - name: 🧱 Setup Node (optional)
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
       - name: 📦 Install PHP dependencies
         run: |
           cd sprint5-with-bugs/API
           composer install --no-progress --prefer-dist --no-interaction
+          composer require --dev brianium/paratest:^7.0
 
-      - name: 🧪 Prepare Laravel app for testing
+      - name: ⚙️ Prepare Laravel for testing
         run: |
           cd sprint5-with-bugs/API
           cp .env.example .env
           php artisan key:generate
           php artisan config:clear
 
-      - name: 🧪 Run Laravel Tests
+      - name: 🧪 Run Laravel Tests in parallel
         run: |
           cd sprint5-with-bugs/API
           php artisan test --parallel
