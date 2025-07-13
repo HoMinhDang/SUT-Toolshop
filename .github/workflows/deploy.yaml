@@ -35,12 +35,12 @@ jobs:
 
       - name: ⚙️ Prepare Laravel for testing
         run: |
-          cd sprint5-with-bugs/API
+          cd sprint5/API
           cp .env.example .env
           php artisan key:generate
           php artisan config:clear
 
       - name: 🧪 Run Laravel Tests in parallel
         run: |
-          cd sprint5-with-bugs/API
+          cd sprint5/API
           php artisan test --parallel
