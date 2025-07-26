@@ -1,9 +1,11 @@
 name: CI-FE
 
 on:
-  push:
+  workflow_run:
+    workflows: ["CI-BE"]
+    types:
+      - completed
     branches: [main]
-  workflow_dispatch:
 
 jobs:
   test-frontend:
