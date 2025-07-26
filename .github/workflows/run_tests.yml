@@ -2,7 +2,7 @@ name: Run Playwright Tests 🎭
 
 on:
   workflow_run:
-    workflows: ["CI-BE 🧪", "CI-FE"]
+    workflows: ["CI-FE"]
     types:
       - completed
     branches: [main]
