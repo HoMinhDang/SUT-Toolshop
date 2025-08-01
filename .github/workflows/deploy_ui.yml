@@ -21,10 +21,10 @@ jobs:
           node-version: '18'
 
       - name: 📥 Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm cache verify && npm install --include=optional --legacy-peer-deps
 
       - name: 🏗️ Build Angular
-        run: npm run build -- --base-href=/
+        run: npm run build
 
       - name: 🚀 Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
