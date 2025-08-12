@@ -1,4 +1,4 @@
-name: Automated API tests using Postman CLI
+name: Automated API Tests with Postman CLI
 
 on:
   push:
@@ -8,11 +8,14 @@ env:
   BASE_URL: https://65c6a2e22c11.ngrok-free.app
 
 jobs:
-  automated-api-tests:
+  run-postman-api-tests:
+    name: Run Postman API Tests
     runs-on: ubuntu-latest
+    continue-on-error: false    # Dừng workflow khi có lỗi xảy ra
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Install Postman CLI
         run: |
@@ -22,20 +25,23 @@ jobs:
         run: |
           postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
 
-      - name: Run API tests with related_data.csv
+      - name: Run Related Products API Tests
         run: |
-          postman collection run 47475428-b8200262-8b6f-499e-b382-02a375f03446 -i 47475428-abb3cc56-b506-4ad7-bc9a-585ed2f095e1 \
+          postman collection run 47475428-b8200262-8b6f-499e-b382-02a375f03446 \
+            -i 47475428-abb3cc56-b506-4ad7-bc9a-585ed2f095e1 \
             --env-var baseURL=$BASE_URL \
             --iteration-data postman/related_data.csv
 
-      - name: Run API tests with search_data.csv
+      - name: Run Search API Tests
         run: |
-          postman collection run 47475428-b8200262-8b6f-499e-b382-02a375f03446 -i 47475428-1e2093f5-0832-4d08-b376-4650a52ae187 \
+          postman collection run 47475428-b8200262-8b6f-499e-b382-02a375f03446 \
+            -i 47475428-1e2093f5-0832-4d08-b376-4650a52ae187 \
             --env-var baseURL=$BASE_URL \
             --iteration-data postman/search_data.csv
 
-      - name: Run API tests with sort_data.csv
+      - name: Run Sort API Tests
         run: |
-          postman collection run 47475428-b8200262-8b6f-499e-b382-02a375f03446 -i 47475428-5d460591-30da-458b-a41c-8741cc4885e2 \
+          postman collection run 47475428-b8200262-8b6f-499e-b382-02a375f03446 \
+            -i 47475428-5d460591-30da-458b-a41c-8741cc4885e2 \
             --env-var baseURL=$BASE_URL \
             --iteration-data postman/sort_data.csv
