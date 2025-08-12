@@ -1,0 +1,11 @@
+sort
+"name,asc"
+"name,desc"
+"price,asc"
+"price,desc"
+"weight,asc"
+"name,zzz"
+"price"
+"price,asc&sort=name,desc"
+" name , asc"
+""

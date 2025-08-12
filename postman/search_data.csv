@@ -1,0 +1,8 @@
+Query,Expected_Status,Expected_Condition
+Drill,200,ContainsResult
+Hammer,200,ContainsResult
+,200,ContainsResult
+nonexistentitem,200,NoResult
+%$#@,200,NoResult
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,200,NoResult
+<script>alert('x')</script>,200,NoResult

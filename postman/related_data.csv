@@ -1,0 +1,7 @@
+ID,ExpectedStatus
+1,200
+99999,500
+abc,500
+,404
+1 OR 1=1,404
+<script>alert(1)</script>,404
