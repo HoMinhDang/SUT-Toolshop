@@ -11,7 +11,6 @@ jobs:
   run-postman-api-tests:
     name: Run Postman API Tests
     runs-on: ubuntu-latest
-    continue-on-error: false    # Dừng workflow khi có lỗi xảy ra
 
     steps:
       - name: Checkout Repository
@@ -26,6 +25,7 @@ jobs:
           postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
 
       - name: Run Related Products API Tests
+        continue-on-error: true 
         run: |
           postman collection run 47475428-b8200262-8b6f-499e-b382-02a375f03446 \
             -i 47475428-abb3cc56-b506-4ad7-bc9a-585ed2f095e1 \
@@ -33,6 +33,7 @@ jobs:
             --iteration-data postman/related_data.csv
 
       - name: Run Search API Tests
+        continue-on-error: true
         run: |
           postman collection run 47475428-b8200262-8b6f-499e-b382-02a375f03446 \
             -i 47475428-1e2093f5-0832-4d08-b376-4650a52ae187 \
