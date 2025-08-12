@@ -1,43 +1,38 @@
-name: CI - API tests with Docker & Postman CLI
+name: Automated API tests using Postman CLI
 
 on:
   push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
-  api-tests:
+  automated-api-tests:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Start containers 🐳
-        run: |
-          docker compose -f docker-compose.yml up -d --force-recreate
-
-      - name: Wait for API to be ready
-        run: sleep 30s
-
-      - name: Seed database 🌱
-        run: docker compose exec -T laravel-api php artisan migrate:refresh --seed
+      - uses: actions/checkout@v4
 
       - name: Install Postman CLI
-        run: curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
-
-      - name: Login Postman CLI
-        run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
-
-      - name: Run Postman CLI tests (related_data.csv)
         run: |
-          postman collection run postman/HW07.postman_collection.json --iteration-data postman/related_data.csv --env-var baseUrl=http://localhost:8091
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
 
-      - name: Run Postman CLI tests (search_data.csv)
+      - name: Login to Postman CLI
         run: |
-          postman collection run postman/HW07.postman_collection.json --iteration-data postman/search_data.csv --env-var baseUrl=http://localhost:8091
+          postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
 
-      - name: Run Postman CLI tests (sort_data.csv)
+      - name: Run API tests with related_data.csv
         run: |
-          postman collection run postman/HW07.postman_collection.json --iteration-data postman/sort_data.csv --env-var baseUrl=http://localhost:8091
+          postman collection run "47475428-b8200262-8b6f-499e-b382-02a375f03446" \
+            --env-var baseUrl=https://65c6a2e22c11.ngrok-free.app \
+            --iteration-data postman/related_data.csv
+
+      - name: Run API tests with search_data.csv
+        run: |
+          postman collection run "47475428-b8200262-8b6f-499e-b382-02a375f03446" \
+            --env-var baseUrl=https://65c6a2e22c11.ngrok-free.app \
+            --iteration-data postman/search_data.csv
+
+      - name: Run API tests with sort_data.csv
+        run: |
+          postman collection run "47475428-b8200262-8b6f-499e-b382-02a375f03446" \
+            --env-var baseUrl=https://65c6a2e22c11.ngrok-free.app \
+            --iteration-data postman/sort_data.csv
