@@ -22,17 +22,17 @@ jobs:
       - name: Run API tests with related_data.csv
         run: |
           postman collection run "47475428-b8200262-8b6f-499e-b382-02a375f03446" \
-            --env-var baseUrl=https://65c6a2e22c11.ngrok-free.app \
+            --env-var baseURL=https://65c6a2e22c11.ngrok-free.app \
             --iteration-data postman/related_data.csv
 
       - name: Run API tests with search_data.csv
         run: |
           postman collection run "47475428-b8200262-8b6f-499e-b382-02a375f03446" \
-            --env-var baseUrl=https://65c6a2e22c11.ngrok-free.app \
+            --env-var baseURL=https://65c6a2e22c11.ngrok-free.app \
             --iteration-data postman/search_data.csv
 
       - name: Run API tests with sort_data.csv
         run: |
           postman collection run "47475428-b8200262-8b6f-499e-b382-02a375f03446" \
-            --env-var baseUrl=https://65c6a2e22c11.ngrok-free.app \
+            --env-var baseURL=https://65c6a2e22c11.ngrok-free.app \
             --iteration-data postman/sort_data.csv
