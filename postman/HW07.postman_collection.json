@@ -51,12 +51,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8091/products/search?q={{Query}}",
-							"protocol": "http",
+							"raw": "{{baseURL}}/products/search?q={{Query}}",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8091",
 							"path": [
 								"products",
 								"search"
@@ -150,12 +148,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8091/products?sort={{sort}}",
-							"protocol": "http",
+							"raw": "{{baseURL}}/products?sort={{sort}}",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8091",
 							"path": [
 								"products"
 							],
@@ -198,12 +194,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8091/products/{{ID}}/related",
-							"protocol": "http",
+							"raw": "{{baseURL}}/products/{{ID}}/related",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "8091",
 							"path": [
 								"products",
 								"{{ID}}",
@@ -214,6 +208,13 @@
 					"response": []
 				}
 			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "http://localhost:8091",
+			"type": "default"
 		}
 	]
 }
