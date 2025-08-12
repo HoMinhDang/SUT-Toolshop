@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+env:
+  BASE_URL: https://65c6a2e22c11.ngrok-free.app
+
 jobs:
   automated-api-tests:
     runs-on: ubuntu-latest
@@ -21,18 +24,18 @@ jobs:
 
       - name: Run API tests with related_data.csv
         run: |
-          postman collection run "47475428-b8200262-8b6f-499e-b382-02a375f03446" \
-            --env-var baseURL=https://65c6a2e22c11.ngrok-free.app \
+          postman collection run 47475428-b8200262-8b6f-499e-b382-02a375f03446 -i 47475428-abb3cc56-b506-4ad7-bc9a-585ed2f095e1 \
+            --env-var baseURL=$BASE_URL \
             --iteration-data postman/related_data.csv
 
       - name: Run API tests with search_data.csv
         run: |
-          postman collection run "47475428-b8200262-8b6f-499e-b382-02a375f03446" \
-            --env-var baseURL=https://65c6a2e22c11.ngrok-free.app \
+          postman collection run 47475428-b8200262-8b6f-499e-b382-02a375f03446 -i 47475428-1e2093f5-0832-4d08-b376-4650a52ae187 \
+            --env-var baseURL=$BASE_URL \
             --iteration-data postman/search_data.csv
 
       - name: Run API tests with sort_data.csv
         run: |
-          postman collection run "47475428-b8200262-8b6f-499e-b382-02a375f03446" \
-            --env-var baseURL=https://65c6a2e22c11.ngrok-free.app \
+          postman collection run 47475428-b8200262-8b6f-499e-b382-02a375f03446 -i 47475428-5d460591-30da-458b-a41c-8741cc4885e2 \
+            --env-var baseURL=$BASE_URL \
             --iteration-data postman/sort_data.csv
