@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 env:
-  BASE_URL: https://65c6a2e22c11.ngrok-free.app
+  BASE_URL: https://bfd271a3bbbd.ngrok-free.app
 
 jobs:
   run-postman-api-tests:
